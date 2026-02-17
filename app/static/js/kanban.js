@@ -141,10 +141,10 @@ class KanbanBoard {
       <div class="task-card__header">
         <div class="task-card__title">${this.escapeHtml(task.title)}</div>
         <div class="task-card__actions">
-          <button class="task-card__action" onclick="kanban.editTask(${task.id})">
+          <button class="task-card__action" onclick="kanban.editTask('${task.id}')">
             <i class="fas fa-edit"></i>
           </button>
-          <button class="task-card__action task-card__action--delete" onclick="kanban.deleteTask(${task.id})">
+          <button class="task-card__action task-card__action--delete" onclick="kanban.deleteTask('${task.id}')">
             <i class="fas fa-trash"></i>
           </button>
         </div>
