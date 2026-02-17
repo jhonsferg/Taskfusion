@@ -25,7 +25,7 @@ class TaskBase(BaseModel):
 
 
 class TaskCreate(TaskBase):
-    project_id: int = Field(..., gt=0, description="ID del proyecto")
+    project_id: str = Field(..., description="UUID del proyecto")
 
 
 class TaskUpdate(BaseModel):
@@ -37,8 +37,8 @@ class TaskUpdate(BaseModel):
 
 
 class Task(TaskBase):
-    id: int
-    project_id: int
+    id: str
+    project_id: str
     created_at: datetime
     
     class Config:
