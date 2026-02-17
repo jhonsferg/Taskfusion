@@ -3,38 +3,45 @@ set -e
 
 echo "🚀 TaskFusion Backend - Iniciando..."
 
-# Función para esperar a que PostgreSQL esté listo
-wait_for_postgres() {
-    echo "⏳ Esperando a que PostgreSQL esté listo..."
+wait_for_mysql() {
+    echo "⏳ Esperando a que MySQL esté listo..."
     
     max_attempts=30
     attempt=0
     
     until python -c "
-import psycopg
+import mysqldb
 import os
 import sys
+from urllib.parse import urlparse
 try:
-    conn = psycopg.connect(os.environ['DATABASE_URL'])
+    db_url = os.environ['DATABASE_URL']
+    parsed = urlparse(db_url.replace('mysql+mysqldb://', 'mysql://'))
+    conn = mysqldb.connect(
+        host=parsed.hostname,
+        port=parsed.port or 3306,
+        user=parsed.username,
+        password=parsed.password,
+        database=parsed.path.lstrip('/')
+    )
     conn.close()
     sys.exit(0)
-except:
+except Exception as e:
     sys.exit(1)
-" || [ $attempt -eq $max_attempts ]; do
-        attempt=$((attempt + 1))
-        echo "   Intento $attempt/$max_attempts - PostgreSQL no está listo aún..."
+" || [ \$attempt -eq \$max_attempts ]; do
+        attempt=\$((attempt + 1))
+        echo "   Intento \$attempt/\$max_attempts - MySQL no está listo aún..."
         sleep 2
     done
     
-    if [ $attempt -eq $max_attempts ]; then
-        echo "❌ Error: No se pudo conectar a PostgreSQL después de $max_attempts intentos"
+    if [ \$attempt -eq \$max_attempts ]; then
+        echo "❌ Error: No se pudo conectar a MySQL después de \$max_attempts intentos"
         exit 1
     fi
     
-    echo "✅ PostgreSQL está listo!"
+    echo "✅ MySQL está listo!"
 }
 
-# Función para crear tablas
 create_tables() {
     echo "📋 Creando tablas de base de datos..."
     python -c "
@@ -44,9 +51,8 @@ print('✅ Tablas creadas exitosamente')
 "
 }
 
-# Función para cargar datos semilla
 load_seed_data() {
-    if [ "${LOAD_SEED_DATA:-true}" = "true" ]; then
+    if [ "\${LOAD_SEED_DATA:-true}" = "true" ]; then
         echo "🌱 Cargando datos semilla..."
         python seed.py
     else
@@ -54,8 +60,7 @@ load_seed_data() {
     fi
 }
 
-# Ejecutar pasos de inicialización
-wait_for_postgres
+wait_for_mysql
 create_tables
 load_seed_data
 
@@ -64,5 +69,4 @@ echo "🎉 Inicialización completada!"
 echo "🌐 Iniciando servidor Uvicorn..."
 echo ""
 
-# Ejecutar comando principal (Uvicorn)
 exec "$@"

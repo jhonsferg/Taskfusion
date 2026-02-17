@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     debug: bool = False
     
-    database_url: str = "postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:5432/taskfusion_db"
+    database_url: str = "mysql+mysqldb://taskfusion_user:taskfusion_pass@localhost:3306/taskfusion_db"
     
     host: str = "0.0.0.0"
     port: int = 8000

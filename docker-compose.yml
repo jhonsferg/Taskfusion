@@ -1,19 +1,20 @@
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: taskfusion_postgres
+  mysql:
+    image: mysql:8.0
+    container_name: taskfusion_mysql
     environment:
-      POSTGRES_USER: taskfusion_user
-      POSTGRES_PASSWORD: taskfusion_pass
-      POSTGRES_DB: taskfusion_db
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: taskfusion_db
+      MYSQL_USER: taskfusion_user
+      MYSQL_PASSWORD: taskfusion_pass
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U taskfusion_user -d taskfusion_db"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "taskfusion_user", "-ptaskfusion_pass"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -28,20 +29,20 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+psycopg://taskfusion_user:taskfusion_pass@postgres:5432/taskfusion_db
-      LOAD_SEED_DATA: "true"  # Cambiar a "false" para no cargar datos semilla
+      DATABASE_URL: mysql+mysqldb://taskfusion_user:taskfusion_pass@mysql:3306/taskfusion_db
+      LOAD_SEED_DATA: "true"
       PYTHONUNBUFFERED: "1"
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     volumes:
-      - ./app:/code/app  # Hot reload en desarrollo
+      - ./app:/code/app
     networks:
       - taskfusion_network
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  mysql_data:
     driver: local
 
 networks:

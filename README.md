@@ -1,6 +1,6 @@
 # TaskFusion - Mini Kanban + Analytics Dashboard
 
-Sistema web completo de gestión de proyectos con tablero Kanban y dashboard analítico en tiempo real. Desarrollado con FastAPI, PostgreSQL y tecnologías web tradicionales.
+Sistema web completo de gestión de proyectos con tablero Kanban y dashboard analítico en tiempo real. Desarrollado con FastAPI, MySQL y tecnologías web tradicionales.
 
 ## Tabla de Contenidos
 
@@ -238,7 +238,7 @@ wsl --set-default-version 2
 # 1. Clonar o extraer el proyecto
 cd taskfusion
 
-# 2. Levantar todos los servicios (PostgreSQL + Backend)
+# 2. Levantar todos los servicios (MySQL + Backend)
 docker compose up -d
 
 # 3. Ver logs (opcional)
@@ -255,7 +255,7 @@ La aplicación estará disponible en:
 
 **Características incluidas automáticamente:**
 
-- PostgreSQL configurado y listo
+- MySQL configurado y listo
 - Base de datos y usuario creados
 - Tablas creadas automáticamente
 - Datos semilla cargados (3 proyectos con 14 tareas)
@@ -279,7 +279,7 @@ docker compose up --build -d
 
 ### 💻 Local con uv (Para Desarrollo Avanzado)
 
-**Requisitos**: Python 3.11+, uv, PostgreSQL instalado localmente.
+**Requisitos**: Python 3.11+, uv, MySQL instalado localmente.
 
 ```bash
 # 1. Clonar o extraer el proyecto
@@ -288,11 +288,11 @@ cd taskfusion
 # 2. Sincronizar dependencias
 uv sync
 
-# 3. Configurar PostgreSQL (ver sección detallada abajo)
+# 3. Configurar MySQL (ver sección detallada abajo)
 # Crear base de datos y usuario manualmente
 
 # 4. Configurar variable de entorno
-export DATABASE_URL="postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:5432/taskfusion_db"
+export DATABASE_URL="mysql+mysqldb://taskfusion_user:taskfusion_pass@localhost:3306/taskfusion_db"
 
 # 5. Ejecutar aplicación
 uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -311,7 +311,7 @@ uv init taskfusion
 cd taskfusion
 
 # Agregar dependencias una por una
-uv add fastapi "uvicorn[standard]" sqlalchemy "psycopg[binary]" pydantic pydantic-settings jinja2 python-multipart
+uv add fastapi "uvicorn[standard]" sqlalchemy "mysqlclient[binary]" pydantic pydantic-settings jinja2 python-multipart
 
 # Esto creará automáticamente pyproject.toml y uv.lock
 ```
@@ -322,7 +322,7 @@ uv add fastapi "uvicorn[standard]" sqlalchemy "psycopg[binary]" pydantic pydanti
 
 - Python 3.11 o superior instalado
 - uv instalado
-- PostgreSQL 15 o superior instalado y ejecutándose
+- MySQL 8.0 o superior instalado y ejecutándose
 
 ### Paso 1: Preparar el proyecto
 
@@ -350,9 +350,9 @@ source .venv/bin/activate
 # Sincronizar todas las dependencias desde pyproject.toml
 uv sync
 
-# Verificar instalación de psycopg
-uv pip list | grep psycopg  # Linux/macOS
-uv pip list | Select-String psycopg  # Windows PowerShell
+# Verificar instalación de mysqlclient
+uv pip list | grep mysqlclient  # Linux/macOS
+uv pip list | Select-String mysqlclient  # Windows PowerShell
 ```
 
 **Comandos adicionales útiles:**
@@ -374,44 +374,44 @@ uv pip list
 uv remove nombre-paquete
 ```
 
-### Paso 3: Configurar PostgreSQL
+### Paso 3: Configurar MySQL
 
-#### Instalar PostgreSQL
+#### Instalar MySQL
 
 **Windows:**
 
-- Descargar desde https://www.postgresql.org/download/windows/
+- Descargar desde https://dev.mysql.com/downloads/installer/
 - Ejecutar instalador
-- Recordar la contraseña del usuario postgres
+- Recordar la contraseña del usuario mysql
 
 **Linux (Ubuntu/Debian):**
 
 ```bash
 sudo apt update
-sudo apt install postgresql postgresql-contrib
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
 ```
 
 **macOS:**
 
 ```bash
-brew install postgresql@15
-brew services start postgresql@15
+brew install mysql
+brew services start mysql
 ```
 
 #### Crear base de datos y usuario
 
 ```bash
-# Acceder a PostgreSQL
+# Acceder a MySQL
 # Windows/macOS (puede requerir contraseña):
-psql -U postgres
+psql -U mysql
 
 # Linux:
-sudo -u postgres psql
+sudo -u mysql psql
 ```
 
-Ejecutar en el prompt de PostgreSQL:
+Ejecutar en el prompt de MySQL:
 
 ```sql
 -- Crear usuario
@@ -434,19 +434,19 @@ GRANT ALL PRIVILEGES ON DATABASE taskfusion_db TO taskfusion_user;
 **Linux/macOS:**
 
 ```bash
-export DATABASE_URL="postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:5432/taskfusion_db"
+export DATABASE_URL="mysql+mysqldb://taskfusion_user:taskfusion_pass@localhost:3306/taskfusion_db"
 ```
 
 **Windows PowerShell:**
 
 ```powershell
-$env:DATABASE_URL="postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:5432/taskfusion_db"
+$env:DATABASE_URL="mysql+mysqldb://taskfusion_user:taskfusion_pass@localhost:3306/taskfusion_db"
 ```
 
 **Windows CMD:**
 
 ```cmd
-set DATABASE_URL=postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:5432/taskfusion_db
+set DATABASE_URL=mysql+mysqldb://taskfusion_user:taskfusion_pass@localhost:3306/taskfusion_db
 ```
 
 #### Opción 2: Archivo .env (Permanente)
@@ -454,7 +454,7 @@ set DATABASE_URL=postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:
 Crear archivo `.env` en la raíz del proyecto:
 
 ```env
-DATABASE_URL=postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:5432/taskfusion_db
+DATABASE_URL=mysql+mysqldb://taskfusion_user:taskfusion_pass@localhost:3306/taskfusion_db
 ```
 
 ### Paso 5: Ejecutar la aplicación
@@ -516,7 +516,7 @@ Abrir navegador en:
 
 El proyecto usa Docker Compose con 2 servicios:
 
-1. **postgres**: Base de datos PostgreSQL 17
+1. **mysql**: Base de datos MySQL 8.0
    - Puerto: 5432
    - Usuario automático creado
    - Script de inicialización automático
@@ -524,7 +524,7 @@ El proyecto usa Docker Compose con 2 servicios:
 
 2. **backend**: Aplicación FastAPI
    - Puerto: 8000
-   - Espera a que PostgreSQL esté listo
+   - Espera a que MySQL esté listo
    - Crea tablas automáticamente
    - Carga datos semilla automáticamente
    - Hot reload activado
@@ -547,11 +547,11 @@ docker compose up -d
 
 **¿Qué sucede automáticamente?**
 
-1. Se descarga imagen PostgreSQL 17
+1. Se descarga imagen MySQL 8.0
 2. Se construye imagen del backend
-3. PostgreSQL se inicia y ejecuta `init-db.sql`
+3. MySQL se inicia y ejecuta `init-db.sql`
 4. Se crea usuario `taskfusion_user` y base de datos `taskfusion_db`
-5. Backend espera a que PostgreSQL esté listo
+5. Backend espera a que MySQL esté listo
 6. Backend crea tablas de la base de datos
 7. Backend carga datos semilla (3 proyectos, 14 tareas)
 8. Servidor Uvicorn se inicia en http://localhost:8000
@@ -565,8 +565,8 @@ docker compose ps
 # Ver logs del backend
 docker compose logs -f backend
 
-# Ver logs de PostgreSQL
-docker compose logs -f postgres
+# Ver logs de MySQL
+docker compose logs -f mysql
 
 # Ver logs de ambos servicios
 docker compose logs -f
@@ -646,7 +646,7 @@ volumes:
 
 Edita archivos en `app/` y los cambios se aplicarán automáticamente sin reiniciar el contenedor.
 
-### Acceder a PostgreSQL
+### Acceder a MySQL
 
 ```bash
 # Desde el host (si tienes psql instalado)
@@ -654,7 +654,7 @@ psql -h localhost -U taskfusion_user -d taskfusion_db
 # Password: taskfusion_pass
 
 # Desde el contenedor
-docker compose exec postgres psql -U taskfusion_user -d taskfusion_db
+docker compose exec mysql psql -U taskfusion_user -d taskfusion_db
 ```
 
 ### Comandos avanzados
@@ -670,10 +670,10 @@ docker compose exec backend env
 docker compose exec backend uv run python
 
 # Backup de base de datos
-docker compose exec postgres pg_dump -U taskfusion_user taskfusion_db > backup.sql
+docker compose exec mysql pg_dump -U taskfusion_user taskfusion_db > backup.sql
 
 # Restaurar base de datos
-docker compose exec -T postgres psql -U taskfusion_user taskfusion_db < backup.sql
+docker compose exec -T mysql psql -U taskfusion_user taskfusion_db < backup.sql
 
 # Limpiar volúmenes huérfanos
 docker volume prune
@@ -692,11 +692,11 @@ ports:
   - "8001:8000" # Usar puerto 8001 en lugar de 8000
 ```
 
-**Puerto 5432 ya en uso (PostgreSQL local):**
+**Puerto 3306 ya en uso (MySQL local):**
 
 ```yaml
 # Cambiar puerto en docker-compose.yml
-postgres:
+mysql:
   ports:
     - "5433:5432" # Usar puerto 5433 externamente
 ```
@@ -718,11 +718,11 @@ docker compose up --build
 **Base de datos no se crea:**
 
 ```bash
-# Ver logs de PostgreSQL
-docker compose logs postgres
+# Ver logs de MySQL
+docker compose logs mysql
 
 # Verificar script de inicialización
-docker compose exec postgres cat /docker-entrypoint-initdb.d/init-db.sql
+docker compose exec mysql cat /docker-entrypoint-initdb.d/init-db.sql
 ```
 
 ## Acceso a la Aplicación
@@ -755,7 +755,7 @@ graph TB
     end
 
     subgraph Database
-        PG[(PostgreSQL)]
+        MySQL[(MySQL)]
         ORM[SQLAlchemy ORM]
     end
 
@@ -796,7 +796,7 @@ flowchart TD
     ValidateRequest --> ProcessLogic[Procesar Lógica]
     ProcessLogic --> QueryDB[Consultar DB]
 
-    QueryDB --> PostgreSQL[(PostgreSQL)]
+    QueryDB --> MySQL[(MySQL)]
     PostgreSQL --> Response[Generar Response]
 
     Response --> Browser
@@ -811,7 +811,7 @@ flowchart TD
 - **SQLAlchemy**: ORM para gestión de base de datos
 - **Pydantic**: Validación de datos y configuración
 - **Jinja2**: Motor de plantillas HTML
-- **psycopg**: Adaptador PostgreSQL moderno (versión 3)
+- **mysqlclient**: Adaptador PostgreSQL moderno (versión 3)
 
 ### Frontend
 
@@ -824,7 +824,7 @@ flowchart TD
 
 ### Base de Datos
 
-- **PostgreSQL 15**: Sistema de gestión de base de datos relacional
+- **MySQL 8.0**: Sistema de gestión de base de datos relacional
 
 ### Infraestructura
 
@@ -861,7 +861,7 @@ taskfusion/
 ├── Dockerfile                   # Imagen Docker del backend
 ├── docker-compose.yml          # Configuración de servicios Docker
 ├── entrypoint.sh               # Script de inicialización del backend
-├── init-db.sql                 # Script de inicialización de PostgreSQL
+├── init-db.sql                 # Script de inicialización de MySQL
 ├── seed.py                     # Datos semilla para pruebas
 ├── pyproject.toml              # Configuración del proyecto y dependencias
 ├── uv.lock                     # Versiones exactas de dependencias (generado)
@@ -1310,10 +1310,10 @@ El dashboard analítico muestra métricas en tiempo real mediante visualizacione
 
 | Variable          | Descripción                     | Valor por Defecto                                                                |
 | ----------------- | ------------------------------- | -------------------------------------------------------------------------------- |
-| POSTGRES_USER     | Usuario de PostgreSQL           | taskfusion_user                                                                  |
-| POSTGRES_PASSWORD | Contraseña de PostgreSQL        | taskfusion_pass                                                                  |
+| MYSQL_USER     | Usuario de MySQL           | taskfusion_user                                                                  |
+| MYSQL_PASSWORD | Contraseña de MySQL        | taskfusion_pass                                                                  |
 | POSTGRES_DB       | Nombre de base de datos         | taskfusion_db                                                                    |
-| DATABASE_URL      | URL de conexión completa        | postgresql+psycopg://taskfusion_user:taskfusion_pass@postgres:5432/taskfusion_db |
+| DATABASE_URL      | URL de conexión completa        | mysql+mysqldb://taskfusion_user:taskfusion_pass@mysql:3306/taskfusion_db |
 | LOAD_SEED_DATA    | Cargar datos semilla al iniciar | true                                                                             |
 | PYTHONUNBUFFERED  | Logs sin buffer (tiempo real)   | 1                                                                                |
 
@@ -1321,17 +1321,17 @@ El dashboard analítico muestra métricas en tiempo real mediante visualizacione
 
 | Variable     | Descripción                        | Valor por Defecto                                                                 |
 | ------------ | ---------------------------------- | --------------------------------------------------------------------------------- |
-| DATABASE_URL | URL de conexión a PostgreSQL local | postgresql+psycopg://taskfusion_user:taskfusion_pass@localhost:5432/taskfusion_db |
+| DATABASE_URL | URL de conexión a PostgreSQL local | mysql+mysqldb://taskfusion_user:taskfusion_pass@localhost:3306/taskfusion_db |
 
-**Nota**: La diferencia entre Docker y local está en el host (`postgres` vs `localhost`)
+**Nota**: La diferencia entre Docker y local está en el host (`mysql` vs `localhost`)
 
 ## Solución de Problemas
 
 ### Problemas con uv en Windows
 
-**Error: "failed to build psycopg" o problemas de compilación**
+**Error: "failed to build mysqlclient" o problemas de compilación**
 
-Este proyecto usa `psycopg[binary]` versión 3 para evitar problemas de compilación.
+Este proyecto usa `mysqlclient[binary]` versión 3 para evitar problemas de compilación.
 
 **Solución:**
 
@@ -1343,15 +1343,15 @@ uv cache clean
 # Reinstalar
 uv sync
 
-# Verificar que está instalado psycopg 3
-uv pip list | Select-String psycopg
+# Verificar que está instalado mysqlclient 3
+uv pip list | Select-String mysqlclient
 ```
 
 **Resultado esperado:**
 
 ```
-psycopg                3.x.x
-psycopg-binary         3.x.x
+mysqlclient                3.x.x
+mysqlclient-binary         3.x.x
 ```
 
 **Error: "uv: command not found" después de instalar**
@@ -1419,27 +1419,27 @@ docker system prune -a
 docker volume prune
 ```
 
-### Problemas con PostgreSQL
+### Problemas con MySQL
 
 **Error: "connection refused" o "could not connect to server"**
 
 **Solución Windows:**
 
 - Abrir "Servicios" (services.msc)
-- Buscar "PostgreSQL"
+- Buscar "MySQL"
 - Click derecho → Iniciar
 
 **Solución Linux:**
 
 ```bash
-sudo systemctl start postgresql
-sudo systemctl status postgresql
+sudo systemctl start mysql
+sudo systemctl status mysql
 ```
 
 **Error: "password authentication failed"**
 
 **Solución:**
-Verificar credenciales en DATABASE_URL. Deben coincidir con las configuradas en PostgreSQL.
+Verificar credenciales en DATABASE_URL. Deben coincidir con las configuradas en MySQL.
 
 ### Problemas de Dependencias
 
@@ -1510,23 +1510,23 @@ git config --global core.autocrlf input
 
 ## Notas Importantes
 
-### Migración de psycopg2 a psycopg 3
+### Migración de mysqlclient2 a mysqlclient 3
 
-El proyecto usa **psycopg[binary] 3.1.18** en lugar de psycopg2-binary por las siguientes razones:
+El proyecto usa **mysqlclient[binary] 3.1.18** en lugar de mysqlclient2-binary por las siguientes razones:
 
-**Ventajas de psycopg 3:**
+**Ventajas de mysqlclient 3:**
 
 - Binarios precompilados para Windows, macOS y Linux
 - No requiere compilación ni pg_config
 - Mejor compatibilidad con uv y gestores modernos
 - Más rápido en operaciones async
-- Activamente mantenido (psycopg2 está en modo mantenimiento)
+- Activamente mantenido (mysqlclient2 está en modo mantenimiento)
 - Completamente compatible con SQLAlchemy 2.0
 
 **Migración transparente:**
 
 - No requiere cambios en el código de la aplicación
-- SQLAlchemy 2.0 detecta y usa psycopg 3 automáticamente
+- SQLAlchemy 2.0 detecta y usa mysqlclient 3 automáticamente
 - Mismas funcionalidades y comportamiento
 
 ### Seguridad
@@ -1559,7 +1559,7 @@ Para uso en producción se recomienda:
 - Implementar Redis para caché
 - Configurar CDN para assets estáticos
 - Habilitar compresión gzip
-- Usar pool de conexiones PostgreSQL optimizado
+- Usar pool de conexiones MySQL optimizado
 
 ### Desarrollo
 
@@ -1614,10 +1614,10 @@ uv cache clean
 
 ```bash
 # Crear respaldo
-docker-compose exec postgres pg_dump -U taskfusion_user taskfusion_db > backup.sql
+docker-compose exec mysql pg_dump -U taskfusion_user taskfusion_db > backup.sql
 
 # Restaurar respaldo
-docker-compose exec -T postgres psql -U taskfusion_user taskfusion_db < backup.sql
+docker-compose exec -T mysql psql -U taskfusion_user taskfusion_db < backup.sql
 ```
 
 **Local:**
