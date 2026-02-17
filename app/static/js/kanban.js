@@ -73,7 +73,9 @@ class KanbanBoard {
       this.renderProjectSelect();
       
       if (this.projects.length > 0) {
-        this.selectProject(this.projects[0].id);
+        const selected = this.projects[0];
+        this.elements.projectSelect.value = selected.id;
+        this.selectProject(selected.id);
       }
     } catch (error) {
       Toast.error('Error al cargar proyectos');
@@ -99,7 +101,7 @@ class KanbanBoard {
       return;
     }
 
-    this.currentProjectId = parseInt(projectId);
+    this.currentProjectId = projectId;
     this.elements.createTaskBtn.disabled = false;
     await this.loadTasks();
   }
@@ -196,7 +198,7 @@ class KanbanBoard {
   }
 
   async handleTaskMove(evt) {
-    const taskId = parseInt(evt.item.dataset.taskId);
+    const taskId = evt.item.dataset.taskId;
     const newStatus = evt.to.dataset.status;
     
     try {
