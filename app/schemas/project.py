@@ -18,7 +18,7 @@ class ProjectUpdate(BaseModel):
 
 
 class Project(ProjectBase):
-    id: int
+    id: str
     created_at: datetime
     
     class Config:
