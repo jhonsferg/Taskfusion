@@ -29,7 +29,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: mysql+mysqldb://taskfusion_user:taskfusion_pass@mysql:3306/taskfusion_db
+      DATABASE_URL: mysql+pymysql://taskfusion_user:taskfusion_pass@mysql:3306/taskfusion_db
       LOAD_SEED_DATA: "true"
       PYTHONUNBUFFERED: "1"
     depends_on:
