@@ -15,7 +15,7 @@ class ProjectService:
     def get_all(self, db: Session, skip: int = 0, limit: int = 100) -> List[Project]:
         return self.repository.get_multi(db, skip=skip, limit=limit)
     
-    def get_by_id(self, db: Session, project_id: int) -> Project:
+    def get_by_id(self, db: Session, project_id: str) -> Project:
         project = self.repository.get(db, id=project_id)
         if not project:
             raise HTTPException(
@@ -24,7 +24,7 @@ class ProjectService:
             )
         return project
     
-    def get_with_tasks(self, db: Session, project_id: int) -> Project:
+    def get_with_tasks(self, db: Session, project_id: str) -> Project:
         project = self.repository.get_with_tasks(db, project_id=project_id)
         if not project:
             raise HTTPException(
@@ -46,7 +46,7 @@ class ProjectService:
     def update(
         self,
         db: Session,
-        project_id: int,
+        project_id: str,
         project_in: ProjectUpdate
     ) -> Project:
         project = self.get_by_id(db, project_id)
@@ -61,7 +61,7 @@ class ProjectService:
         
         return self.repository.update(db, db_obj=project, obj_in=project_in)
     
-    def delete(self, db: Session, project_id: int) -> None:
+    def delete(self, db: Session, project_id: str) -> None:
         project = self.get_by_id(db, project_id)
         self.repository.delete(db, id=project_id)
 
