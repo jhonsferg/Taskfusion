@@ -1,6 +1,6 @@
 """
 Routers de la API
 """
-from app.routers import projects, tasks, dashboard, views
+from app.routers import projects, tasks, dashboard
 
-__all__ = ["projects", "tasks", "dashboard", "views"]
+__all__ = ["projects", "tasks", "dashboard"]

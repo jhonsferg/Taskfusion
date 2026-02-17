@@ -22,7 +22,7 @@ services:
       - taskfusion_network
 
   backend:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     container_name: taskfusion_backend
@@ -32,11 +32,14 @@ services:
       DATABASE_URL: mysql+pymysql://taskfusion_user:taskfusion_pass@mysql:3306/taskfusion_db
       LOAD_SEED_DATA: "true"
       PYTHONUNBUFFERED: "1"
+      ENVIRONMENT: development
     depends_on:
       mysql:
         condition: service_healthy
     volumes:
-      - ./app:/code/app
+      - ./app:/app/app
+      - ./app/static:/app/app/static
+      - ./frontend:/app/frontend
     networks:
       - taskfusion_network
     restart: unless-stopped

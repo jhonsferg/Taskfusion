@@ -1,28 +1,52 @@
-FROM python:3.11-slim
+# Stage 1: Build Frontend
+FROM node:20-alpine AS frontend-build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: Backend
+FROM python:3.12-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-WORKDIR /code
+WORKDIR /app
 
-# Copy project files
-COPY pyproject.toml .
-COPY README.md .
-COPY uv.lock* .
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
 
-# Install dependencies with uv
-RUN uv sync --frozen --no-dev
+# Copy project definition
+COPY pyproject.toml uv.lock ./
 
-# Copy application code
-COPY ./app /code/app
-COPY seed.py /code/
-COPY entrypoint.sh /code/
+# Install dependencies
+RUN uv sync --frozen --no-install-project --no-dev
 
-# Convert line endings and make executable
-RUN sed -i 's/\r$//' /code/entrypoint.sh && chmod +x /code/entrypoint.sh
+# Copy backend code
+COPY . .
 
-# Set entrypoint
-ENTRYPOINT ["/code/entrypoint.sh"]
+# Copy built frontend assets
+COPY --from=frontend-build /app/app/static /app/app/static
+
+# Make entrypoint executable
+RUN chmod +x entrypoint.sh
+
+# Environment variables
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONPATH=/app
+
+EXPOSE 8000
+
+ENTRYPOINT ["./entrypoint.sh"]
 
 # Default command
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -6,10 +6,10 @@ from app.core.database import get_db
 from app.schemas import task as schemas
 from app.services import task_service
 
-router = APIRouter(prefix="/api/tasks", tags=["tasks"])
+router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
-@router.get("/", response_model=List[schemas.Task])
+@router.get("", response_model=List[schemas.Task])
 def get_tasks(
     project_id: Optional[str] = Query(None, description="Filtrar por proyecto (UUID)"),
     skip: int = 0,
@@ -27,7 +27,7 @@ def get_task(
     return task_service.get_by_id(db, task_id=task_id)
 
 
-@router.post("/", response_model=schemas.Task, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.Task, status_code=status.HTTP_201_CREATED)
 def create_task(
     task: schemas.TaskCreate,
     db: Session = Depends(get_db)

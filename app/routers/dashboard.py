@@ -5,7 +5,7 @@ from app.core.database import get_db
 from app.schemas import DashboardMetrics
 from app.services import dashboard_service
 
-router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
+router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
 @router.get("/metrics", response_model=DashboardMetrics)

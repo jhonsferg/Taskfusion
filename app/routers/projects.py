@@ -6,10 +6,10 @@ from app.core.database import get_db
 from app.schemas import project as schemas
 from app.services import project_service
 
-router = APIRouter(prefix="/api/projects", tags=["projects"])
+router = APIRouter(prefix="/projects", tags=["projects"])
 
 
-@router.get("/", response_model=List[schemas.Project])
+@router.get("", response_model=List[schemas.Project])
 def get_projects(
     skip: int = 0,
     limit: int = 100,
@@ -26,7 +26,7 @@ def get_project(
     return project_service.get_with_tasks(db, project_id=project_id)
 
 
-@router.post("/", response_model=schemas.Project, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.Project, status_code=status.HTTP_201_CREATED)
 def create_project(
     project: schemas.ProjectCreate,
     db: Session = Depends(get_db)
