@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
 @router.get("/", response_model=List[schemas.Task])
 def get_tasks(
-    project_id: Optional[int] = Query(None, description="Filtrar por proyecto"),
+    project_id: Optional[str] = Query(None, description="Filtrar por proyecto (UUID)"),
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db)
@@ -21,7 +21,7 @@ def get_tasks(
 
 @router.get("/{task_id}", response_model=schemas.Task)
 def get_task(
-    task_id: int,
+    task_id: str,
     db: Session = Depends(get_db)
 ):
     return task_service.get_by_id(db, task_id=task_id)
@@ -37,7 +37,7 @@ def create_task(
 
 @router.put("/{task_id}", response_model=schemas.Task)
 def update_task(
-    task_id: int,
+    task_id: str,
     task: schemas.TaskUpdate,
     db: Session = Depends(get_db)
 ):
@@ -46,7 +46,7 @@ def update_task(
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(
-    task_id: int,
+    task_id: str,
     db: Session = Depends(get_db)
 ):
     task_service.delete(db, task_id=task_id)
