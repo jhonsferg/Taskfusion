@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: taskfusion_postgres
+    environment:
+      POSTGRES_USER: taskfusion_user
+      POSTGRES_PASSWORD: taskfusion_pass
+      POSTGRES_DB: taskfusion_db
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskfusion_user -d taskfusion_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taskfusion_network
+
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: taskfusion_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://taskfusion_user:taskfusion_pass@postgres:5432/taskfusion_db
+      LOAD_SEED_DATA: "true"  # Cambiar a "false" para no cargar datos semilla
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./app:/code/app  # Hot reload en desarrollo
+    networks:
+      - taskfusion_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  taskfusion_network:
+    driver: bridge

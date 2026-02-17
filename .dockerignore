@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker (excepto docker-compose.yml que puede ser útil)
+.dockerignore
+Dockerfile
+
+# Documentation (excepto README.md)
+*.md
+!README.md
+
+# Cache
+.cache/
+.pytest_cache/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.log
+*.db
+*.sqlite3
+
+# Tests (excluir de producción)
+tests/
+*.test.py
+
+# Desarrollo local
+.env.local
+.env.development
