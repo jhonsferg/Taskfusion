@@ -846,23 +846,146 @@ body {
   cursor: grabbing;
 }
 
+/* ==============================================
+   RESPONSIVE DESIGN - MOBILE FIRST
+   ============================================== */
+
+/* Mobile hamburger menu */
+.navbar__toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.navbar__toggle:hover {
+  background-color: var(--color-background);
+}
+
+.navbar__toggle-icon {
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-text);
+  display: block;
+  position: relative;
+  transition: var(--transition);
+}
+
+.navbar__toggle-icon::before,
+.navbar__toggle-icon::after {
+  content: '';
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-text);
+  position: absolute;
+  transition: var(--transition);
+}
+
+.navbar__toggle-icon::before {
+  top: -8px;
+}
+
+.navbar__toggle-icon::after {
+  bottom: -8px;
+}
+
+.navbar__toggle.active .navbar__toggle-icon {
+  background-color: transparent;
+}
+
+.navbar__toggle.active .navbar__toggle-icon::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.navbar__toggle.active .navbar__toggle-icon::after {
+  bottom: 0;
+  transform: rotate(-45deg);
+}
+
+/* Tablet: 768px - 1024px */
+@media (max-width: 1024px) {
+  .kanban__board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile Large: 481px - 768px */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
+  /* Navbar responsive */
+  .navbar__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .navbar__container {
     padding: 1rem;
   }
 
+  .navbar__menu {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    flex-direction: column;
+    gap: 0;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .navbar__menu.active {
+    transform: translateX(0);
+  }
+
+  .navbar__link {
+    border-radius: 0;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    width: 100%;
+  }
+
+  .navbar__link:last-child {
+    border-bottom: none;
+  }
+
   .navbar__brand-text {
-    display: none;
+    font-size: 1.25rem;
   }
 
-  .navbar__link span {
-    display: none;
+  /* Main content */
+  .main-content {
+    padding: 1rem;
   }
 
+  /* Kanban single column */
+  .kanban__board {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .kanban__column {
+    min-height: 400px;
+  }
+
+  /* Headers */
   .kanban__header,
   .dashboard__header {
     padding: 1.5rem;
@@ -872,34 +995,208 @@ body {
   .dashboard__header-content {
     flex-direction: column;
     align-items: stretch;
+    gap: 1rem;
   }
 
-  .kanban__actions,
-  .dashboard__actions {
+  .kanban__title,
+  .dashboard__title {
+    font-size: 1.5rem;
+  }
+
+  .kanban__actions {
     width: 100%;
     flex-direction: column;
   }
 
-  .kanban__actions button,
-  .dashboard__actions button {
+  .kanban__actions button {
     width: 100%;
+    justify-content: center;
   }
 
   .project-selector__select {
     width: 100%;
+    min-width: auto;
   }
 
-  .kanban__board {
+  /* Metrics responsive */
+  .metrics {
     grid-template-columns: 1fr;
   }
 
+  .metric-card {
+    padding: 1.25rem;
+  }
+
+  .metric-card__icon {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem;
+  }
+
+  .metric-card__value {
+    font-size: 1.75rem;
+  }
+
+  /* Charts */
   .charts {
     grid-template-columns: 1fr;
   }
 
+  .chart-card__body {
+    height: 250px;
+  }
+
+  /* Toasts */
   .toast-container {
-    right: 1rem;
-    left: 1rem;
+    right: 0.75rem;
+    left: 0.75rem;
     max-width: none;
+    top: 70px;
+  }
+
+  /* Modal */
+  .modal__header,
+  .modal__body,
+  .modal__footer {
+    padding: 1.25rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Touch optimization - minimum 44x44px */
+  .task-card__action,
+  .btn,
+  .navbar__link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .btn {
+    padding: 0.875rem 1.25rem;
   }
 }
+
+/* Mobile Small: max 480px */
+@media (max-width: 480px) {
+  .navbar__brand {
+    font-size: 1.125rem;
+  }
+
+  .navbar__brand-text {
+    display: none;
+  }
+
+  .main-content {
+    padding: 0.75rem;
+  }
+
+  .kanban__header,
+  .dashboard__header {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .kanban__title,
+  .dashboard__title {
+    font-size: 1.25rem;
+  }
+
+  .kanban__column {
+    min-height: 350px;
+  }
+
+  .task-card {
+    padding: 0.875rem;
+  }
+
+  .task-card__title {
+    font-size: 0.9375rem;
+  }
+
+  .metric-card__value {
+    font-size: 1.5rem;
+  }
+
+  .chart-card {
+    padding: 1rem;
+  }
+
+  .chart-card__body {
+    height: 220px;
+  }
+
+  /* Stack buttons vertically on very small screens */
+  .modal__footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal__footer button {
+    width: 100%;
+  }
+}
+
+/* Landscape orientation optimization */
+@media (max-height: 600px) and (orientation: landscape) {
+  .kanban__column {
+    min-height: 300px;
+  }
+
+  .navbar__menu {
+    top: 60px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+}
+
+/* Print styles */
+@media print {
+  .navbar,
+  .kanban__actions,
+  .task-card__actions,
+  .toast-container,
+  .loading-overlay {
+    display: none !important;
+  }
+
+  .kanban__board {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .task-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000;
+    --color-text-light: #333;
+  }
+
+  .task-card,
+  .kanban__column,
+  .metric-card {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .navbar__menu {
+    transition: none;
+  }
+}
+
