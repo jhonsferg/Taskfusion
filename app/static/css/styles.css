@@ -975,8 +975,9 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
     bottom: 0;
+    width: 280px;
+    max-width: 85%;
     background: var(--color-surface);
     flex-direction: column;
     gap: 0;
@@ -985,6 +986,7 @@ body {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 999;
     overflow-y: auto;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
   }
 
   .navbar__menu.active {
@@ -997,6 +999,15 @@ body {
     border-bottom: 1px solid var(--color-border);
     width: 100%;
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .navbar__link i {
+    font-size: 1.25rem;
+    width: 24px;
+    text-align: center;
   }
 
   .navbar__link:last-child {
@@ -1004,7 +1015,12 @@ body {
   }
 
   .navbar__link--active {
-    background: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    color: white;
+    font-weight: 600;
+  }
+
+  .navbar__link--active i {
     color: white;
   }
 
