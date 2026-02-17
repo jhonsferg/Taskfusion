@@ -15,13 +15,11 @@ RUN uv sync --frozen --no-dev
 
 # Copy application code
 COPY ./app /code/app
-
-# Copy seed data and entrypoint scripts
 COPY seed.py /code/
 COPY entrypoint.sh /code/
 
-# Make entrypoint executable
-RUN chmod +x /code/entrypoint.sh
+# Convert line endings and make executable
+RUN sed -i 's/\r$//' /code/entrypoint.sh && chmod +x /code/entrypoint.sh
 
 # Set entrypoint
 ENTRYPOINT ["/code/entrypoint.sh"]
