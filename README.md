@@ -244,7 +244,7 @@ docker compose up -d
 # 3. Ver logs (opcional)
 docker compose logs -f backend
 
-# ✅ Eso es todo!
+# Eso es todo!
 ```
 
 La aplicación estará disponible en:
@@ -255,11 +255,11 @@ La aplicación estará disponible en:
 
 **Características incluidas automáticamente:**
 
-- ✅ PostgreSQL configurado y listo
-- ✅ Base de datos y usuario creados
-- ✅ Tablas creadas automáticamente
-- ✅ Datos semilla cargados (3 proyectos con 14 tareas)
-- ✅ Hot reload activado (cambios en código se reflejan automáticamente)
+- PostgreSQL configurado y listo
+- Base de datos y usuario creados
+- Tablas creadas automáticamente
+- Datos semilla cargados (3 proyectos con 14 tareas)
+- Hot reload activado (cambios en código se reflejan automáticamente)
 
 **Comandos útiles:**
 
@@ -547,14 +547,14 @@ docker compose up -d
 
 **¿Qué sucede automáticamente?**
 
-1. ✅ Se descarga imagen PostgreSQL 17
-2. ✅ Se construye imagen del backend
-3. ✅ PostgreSQL se inicia y ejecuta `init-db.sql`
-4. ✅ Se crea usuario `taskfusion_user` y base de datos `taskfusion_db`
-5. ✅ Backend espera a que PostgreSQL esté listo
-6. ✅ Backend crea tablas de la base de datos
-7. ✅ Backend carga datos semilla (3 proyectos, 14 tareas)
-8. ✅ Servidor Uvicorn se inicia en http://localhost:8000
+1. Se descarga imagen PostgreSQL 17
+2. Se construye imagen del backend
+3. PostgreSQL se inicia y ejecuta `init-db.sql`
+4. Se crea usuario `taskfusion_user` y base de datos `taskfusion_db`
+5. Backend espera a que PostgreSQL esté listo
+6. Backend crea tablas de la base de datos
+7. Backend carga datos semilla (3 proyectos, 14 tareas)
+8. Servidor Uvicorn se inicia en http://localhost:8000
 
 ### Paso 3: Verificar estado de servicios
 
@@ -838,18 +838,12 @@ flowchart TD
 taskfusion/
 │
 ├── app/
-│   ├── __init__.py
-│   ├── main.py                 # Aplicación principal FastAPI
-│   ├── database.py             # Configuración de base de datos
-│   ├── models.py               # Modelos SQLAlchemy
-│   ├── schemas.py              # Esquemas Pydantic
-│   │
-│   ├── routers/
-│   │   ├── __init__.py
-│   │   ├── projects.py         # Endpoints de proyectos
-│   │   ├── tasks.py            # Endpoints de tareas
-│   │   └── dashboard.py        # Endpoints de métricas
-│   │
+│   ├── core/                   # Configuración y base de datos
+│   ├── models/                 # Modelos de SQLAlchemy (ORM)
+│   ├── schemas/                # Esquemas de Pydantic (validación)
+│   ├── repositories/           # Capa de acceso a datos
+│   ├── services/               # Lógica de negocio
+│   ├── routers/                # Endpoints de API y vistas
 │   ├── templates/
 │   │   ├── base.html           # Plantilla base
 │   │   ├── kanban.html         # Vista Kanban
@@ -878,30 +872,184 @@ taskfusion/
 
 ### Descripción de Archivos Clave
 
-**Backend:**
+#### 1. Core (`core/`)
+**Propósito**: Configuración centralizada y gestión de base de datos.
 
-- `app/main.py`: Punto de entrada de FastAPI, configuración de rutas y middleware
-- `app/database.py`: Conexión a PostgreSQL con SQLAlchemy
-- `app/models.py`: Definición de tablas (Project, Task)
-- `app/schemas.py`: Validación de datos con Pydantic
+- `config.py`: Configuración de la aplicación usando Pydantic Settings
+- `database.py`: Configuración de SQLAlchemy, engine, session factory
 
-**Docker:**
+**Principio**: Configuración y infraestructura base.
 
-- `Dockerfile`: Construcción de imagen del backend con uv
-- `docker-compose.yml`: Orquestación de PostgreSQL y Backend
-- `entrypoint.sh`: Script que espera PostgreSQL, crea tablas y carga seeds
-- `init-db.sql`: Inicialización de base de datos y permisos
+#### 2. Models (`models/`)
+**Propósito**: Definición de modelos de base de datos usando SQLAlchemy ORM.
 
-**Datos:**
+- `project.py`: Modelo Project
+- `task.py`: Modelo Task con enums (PriorityEnum, StatusEnum)
 
-- `seed.py`: Carga automática de 3 proyectos y 14 tareas de ejemplo
-- `uv.lock`: Garantiza builds reproducibles con versiones exactas
+**Principio**: Representa la estructura de datos en la base de datos.
 
-**Frontend:**
+#### 3. Schemas (`schemas/`)
+**Propósito**: Validación de datos usando Pydantic.
 
-- `templates/`: Plantillas Jinja2 con HTML5 semántico
-- `static/css/`: Estilos personalizados con animaciones y responsive design
-- `static/js/`: JavaScript vanilla con librerías desde CDN
+- `project.py`: Schemas para Project (Create, Update, Response)
+- `task.py`: Schemas para Task (Create, Update, Response)
+- `dashboard.py`: Schema para DashboardMetrics
+
+**Principio**: Contratos de datos entre capas, validación automática.
+
+#### 4. Repositories (`repositories/`)
+**Propósito**: Capa de acceso a datos, abstracción sobre SQLAlchemy.
+
+- `base.py`: Repositorio genérico con operaciones CRUD
+- `project.py`: Repositorio específico de Project
+- `task.py`: Repositorio específico de Task con consultas especializadas
+
+**Principio**: Único punto de acceso a la base de datos, reutilización de código.
+
+#### 5. Services (`services/`)
+**Propósito**: Lógica de negocio de la aplicación.
+
+- `project.py`: Servicio de Project (validaciones, reglas de negocio)
+- `task.py`: Servicio de Task (validaciones, reglas de negocio)
+- `dashboard.py`: Servicio de Dashboard (cálculo de métricas)
+
+**Principio**: Encapsula lógica de negocio, orquesta repositorios.
+
+#### 6. Routers (`routers/`)
+**Propósito**: Definición de endpoints de API y rutas de vistas.
+
+- `projects.py`: Endpoints de API para proyectos
+- `tasks.py`: Endpoints de API para tareas
+- `dashboard.py`: Endpoints de API para métricas
+- `views.py`: Rutas para renderizar templates HTML
+
+**Principio**: Delega a servicios, solo maneja HTTP.
+
+#### 7. Templates (`templates/`)
+**Propósito**: Plantillas HTML usando Jinja2.
+
+- `base.html`: Plantilla base con estructura común
+- `kanban.html`: Vista del tablero Kanban
+- `dashboard.html`: Vista del dashboard de analytics
+
+#### 8. Static (`static/`)
+**Propósito**: Archivos estáticos servidos directamente.
+
+- `css/styles.css`: Estilos personalizados
+- `js/kanban.js`: Lógica del tablero Kanban
+- `js/dashboard.js`: Lógica del dashboard
+- `js/utils.js`: Funciones utilitarias compartidas
+
+### Flujo de Datos
+
+```
+Request → Router → Service → Repository → Database
+                      ↓
+Response ← Router ← Service ← Repository ← Database
+```
+
+#### Ejemplo: Crear una tarea
+
+1. **Router** (`routers/tasks.py`): Recibe POST request, valida con schema
+2. **Service** (`services/task.py`): Verifica que el proyecto existe
+3. **Repository** (`repositories/task.py`): Ejecuta INSERT en base de datos
+4. **Database**: Persiste la tarea
+5. **Repository**: Devuelve modelo Task
+6. **Service**: Devuelve modelo Task
+7. **Router**: Serializa con schema y devuelve JSON
+
+### Ventajas de Esta Arquitectura
+
+#### 1. Separación de Responsabilidades
+Cada capa tiene una responsabilidad única y bien definida.
+
+#### 2. Testabilidad
+Fácil de testear cada capa de forma independiente con mocks.
+
+#### 3. Mantenibilidad
+Cambios en una capa no afectan a las demás (bajo acoplamiento).
+
+#### 4. Reutilización
+Repositorios y servicios pueden ser reutilizados por múltiples routers.
+
+#### 5. Escalabilidad
+Fácil agregar nuevas funcionalidades sin tocar código existente.
+
+#### 6. Claridad
+Estructura clara y predecible, fácil de entender para nuevos desarrolladores.
+
+### Patrones Utilizados
+
+#### Repository Pattern
+Los repositorios abstraen el acceso a datos y encapsulan consultas SQL.
+
+#### Service Layer Pattern
+Los servicios encapsulan la lógica de negocio y orquestan múltiples repositorios.
+
+#### Dependency Injection
+FastAPI inyecta dependencias (db session, configuración) automáticamente.
+
+#### Data Transfer Objects (DTO)
+Los schemas Pydantic actúan como DTOs entre capas.
+
+### Principios SOLID Aplicados
+
+- **S**ingle Responsibility: Cada clase tiene una única responsabilidad
+- **O**pen/Closed: Abierto para extensión, cerrado para modificación
+- **L**iskov Substitution: Repositorio base puede ser sustituido por específicos
+- **I**nterface Segregation: Interfaces pequeñas y específicas
+- **D**ependency Inversion: Dependemos de abstracciones (BaseRepository)
+
+### Cómo Agregar Nueva Funcionalidad
+
+#### Ejemplo: Agregar categorías a proyectos
+
+1. **Model**: Crear `models/category.py`
+2. **Schema**: Crear `schemas/category.py`
+3. **Repository**: Crear `repositories/category.py`
+4. **Service**: Crear `services/category.py`
+5. **Router**: Crear `routers/categories.py`
+6. **Main**: Incluir router en `main.py`
+
+### Mejores Prácticas
+
+#### DO
+- Mantener lógica de negocio en servicios
+- Usar repositorios para acceso a datos
+- Validar datos con schemas Pydantic
+- Documentar endpoints con docstrings
+- Manejar errores apropiadamente (HTTPException)
+
+#### DON'T
+- Acceder a base de datos directamente desde routers
+- Poner lógica de negocio en repositorios
+- Mezclar responsabilidades entre capas
+- Usar imports circulares
+- Hardcodear configuración
+
+### Testing
+
+```python
+# Test de servicio (con mock de repositorio)
+def test_create_project():
+    mock_repo = Mock()
+    service = ProjectService()
+    service.repository = mock_repo
+    # ...
+
+# Test de repositorio (con base de datos en memoria)
+def test_get_project():
+    db = SessionLocal()
+    repo = ProjectRepository()
+    project = repo.get(db, id=1)
+    # ...
+
+# Test de router (con TestClient)
+def test_create_project_endpoint():
+    response = client.post("/api/projects/", json={...})
+    assert response.status_code == 201
+    # ...
+```
 
 ## Modelo de Base de Datos
 
