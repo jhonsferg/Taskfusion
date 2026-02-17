@@ -158,7 +158,7 @@ class KanbanBoard {
         ${task.due_date ? `
           <span class="task-card__due-date ${isOverdue ? 'task-card__due-date--overdue' : ''}">
             <i class="fas ${isOverdue ? 'fa-exclamation-circle' : 'fa-calendar'}"></i>
-            ${Utils.formatRelativeDate(task.due_date)}
+            <relative-time datetime="${task.due_date}"></relative-time>
           </span>
         ` : ''}
       </div>
