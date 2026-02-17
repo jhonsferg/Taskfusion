@@ -24,7 +24,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 converted[key] = value
         return converted
     
-    def get(self, db: Session, id: int) -> Optional[ModelType]:
+    def get(self, db: Session, id: str) -> Optional[ModelType]:
         return db.query(self.model).filter(self.model.id == id).first()
     
     def get_multi(
@@ -59,7 +59,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.refresh(db_obj)
         return db_obj
     
-    def delete(self, db: Session, *, id: int) -> Optional[ModelType]:
+    def delete(self, db: Session, *, id: str) -> Optional[ModelType]:
         obj = db.query(self.model).get(id)
         if obj:
             db.delete(obj)
