@@ -20,7 +20,7 @@ def get_projects(
 
 @router.get("/{project_id}", response_model=schemas.ProjectWithTasks)
 def get_project(
-    project_id: int,
+    project_id: str,
     db: Session = Depends(get_db)
 ):
     return project_service.get_with_tasks(db, project_id=project_id)
@@ -36,7 +36,7 @@ def create_project(
 
 @router.put("/{project_id}", response_model=schemas.Project)
 def update_project(
-    project_id: int,
+    project_id: str,
     project: schemas.ProjectUpdate,
     db: Session = Depends(get_db)
 ):
@@ -45,7 +45,7 @@ def update_project(
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(
-    project_id: int,
+    project_id: str,
     db: Session = Depends(get_db)
 ):
     project_service.delete(db, project_id=project_id)
