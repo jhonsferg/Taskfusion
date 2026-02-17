@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Kanban Board - TaskFusion{% endblock %}
+
+{% block content %}
+<div class="kanban">
+    <div class="kanban__header">
+        <div class="kanban__header-content">
+            <h1 class="kanban__title">
+                <i class="fas fa-columns kanban__title-icon"></i>
+                Tablero Kanban
+            </h1>
+            <div class="kanban__actions">
+                <div class="project-selector">
+                    <select class="project-selector__select" id="projectSelect">
+                        <option value="">Seleccionar proyecto...</option>
+                    </select>
+                </div>
+                <button class="btn btn--primary" data-bs-toggle="modal" data-bs-target="#createProjectModal">
+                    <i class="fas fa-plus"></i>
+                    Nuevo Proyecto
+                </button>
+                <button class="btn btn--secondary" id="createTaskBtn" disabled>
+                    <i class="fas fa-tasks"></i>
+                    Nueva Tarea
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="kanban__board" id="kanbanBoard">
+        <div class="kanban__column kanban__column--backlog">
+            <div class="kanban__column-header">
+                <div class="kanban__column-title">
+                    <i class="fas fa-inbox"></i>
+                    <span>Backlog</span>
+                    <span class="kanban__column-count" id="backlogCount">0</span>
+                </div>
+            </div>
+            <div class="kanban__column-content" id="backlogColumn" data-status="backlog"></div>
+        </div>
+
+        <div class="kanban__column kanban__column--in-progress">
+            <div class="kanban__column-header">
+                <div class="kanban__column-title">
+                    <i class="fas fa-spinner"></i>
+                    <span>En Progreso</span>
+                    <span class="kanban__column-count" id="inProgressCount">0</span>
+                </div>
+            </div>
+            <div class="kanban__column-content" id="inProgressColumn" data-status="in_progress"></div>
+        </div>
+
+        <div class="kanban__column kanban__column--done">
+            <div class="kanban__column-header">
+                <div class="kanban__column-title">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Completado</span>
+                    <span class="kanban__column-count" id="doneCount">0</span>
+                </div>
+            </div>
+            <div class="kanban__column-content" id="doneColumn" data-status="done"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createProjectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal--custom">
+            <div class="modal__header">
+                <h5 class="modal__title">
+                    <i class="fas fa-folder-plus"></i>
+                    Crear Proyecto
+                </h5>
+                <button type="button" class="modal__close" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createProjectForm">
+                <div class="modal__body">
+                    <div class="form-group">
+                        <label class="form-group__label">Nombre del Proyecto</label>
+                        <input type="text" class="form-group__input" id="projectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-group__label">Descripción</label>
+                        <textarea class="form-group__textarea" id="projectDescription" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn--ghost" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">
+                        <i class="fas fa-save"></i>
+                        Crear Proyecto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="taskModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal--custom">
+            <div class="modal__header">
+                <h5 class="modal__title" id="taskModalTitle">
+                    <i class="fas fa-tasks"></i>
+                    Nueva Tarea
+                </h5>
+                <button type="button" class="modal__close" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="taskForm">
+                <div class="modal__body">
+                    <input type="hidden" id="taskId">
+                    <div class="form-group">
+                        <label class="form-group__label">Título</label>
+                        <input type="text" class="form-group__input" id="taskTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-group__label">Descripción</label>
+                        <textarea class="form-group__textarea" id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-group__label">Prioridad</label>
+                            <select class="form-group__select" id="taskPriority">
+                                <option value="low">Baja</option>
+                                <option value="medium" selected>Media</option>
+                                <option value="high">Alta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-group__label">Estado</label>
+                            <select class="form-group__select" id="taskStatus">
+                                <option value="backlog" selected>Backlog</option>
+                                <option value="in_progress">En Progreso</option>
+                                <option value="done">Completado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-group__label">Fecha Límite</label>
+                        <input type="datetime-local" class="form-group__input" id="taskDueDate">
+                    </div>
+                </div>
+                <div class="modal__footer">
+                    <button type="button" class="btn btn--ghost" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">
+                        <i class="fas fa-save"></i>
+                        Guardar Tarea
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/kanban.js') }}"></script>
+{% endblock %}
