@@ -1,12 +1,25 @@
 // Mobile hamburger menu functionality
 class MobileNav {
   constructor() {
+    this.overlay = null;
     this.init();
   }
 
   init() {
+    this.createOverlay();
     this.createToggleButton();
     this.attachEventListeners();
+  }
+
+  createOverlay() {
+    // Check if overlay already exists
+    this.overlay = document.querySelector('.navbar__overlay');
+    
+    if (!this.overlay) {
+      this.overlay = document.createElement('div');
+      this.overlay.className = 'navbar__overlay';
+      document.body.appendChild(this.overlay);
+    }
   }
 
   createToggleButton() {
@@ -29,43 +42,57 @@ class MobileNav {
     }
   }
 
+  toggleMenu(open) {
+    const toggle = document.querySelector('.navbar__toggle');
+    const menu = document.querySelector('.navbar__menu');
+    
+    if (!toggle || !menu) return;
+
+    if (open) {
+      toggle.classList.add('active');
+      menu.classList.add('active');
+      this.overlay.classList.add('active');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden'; // Prevent scroll
+    } else {
+      toggle.classList.remove('active');
+      menu.classList.remove('active');
+      this.overlay.classList.remove('active');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = ''; // Restore scroll
+    }
+  }
+
   attachEventListeners() {
     const toggle = document.querySelector('.navbar__toggle');
     const menu = document.querySelector('.navbar__menu');
     
     if (!toggle || !menu) return;
 
-    toggle.addEventListener('click', () => {
-      const isActive = toggle.classList.toggle('active');
-      menu.classList.toggle('active');
-      toggle.setAttribute('aria-expanded', isActive);
+    // Toggle button click
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isActive = toggle.classList.contains('active');
+      this.toggleMenu(!isActive);
     });
 
     // Close menu when clicking a link
     const links = menu.querySelectorAll('.navbar__link');
     links.forEach(link => {
       link.addEventListener('click', () => {
-        toggle.classList.remove('active');
-        menu.classList.remove('active');
-        toggle.setAttribute('aria-expanded', 'false');
+        this.toggleMenu(false);
       });
     });
 
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-        toggle.classList.remove('active');
-        menu.classList.remove('active');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
+    // Close menu when clicking overlay
+    this.overlay.addEventListener('click', () => {
+      this.toggleMenu(false);
     });
 
     // Close menu on escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && menu.classList.contains('active')) {
-        toggle.classList.remove('active');
-        menu.classList.remove('active');
-        toggle.setAttribute('aria-expanded', 'false');
+        this.toggleMenu(false);
       }
     });
   }
