@@ -1,5 +1,5 @@
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, UTC
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -13,7 +13,7 @@ class TaskRepository(BaseRepository[Task, TaskCreate, TaskUpdate]):
     def get_by_project(
         self,
         db: Session,
-        project_id: int,
+        project_id: str,
         skip: int = 0,
         limit: int = 100
     ) -> List[Task]:
@@ -41,7 +41,7 @@ class TaskRepository(BaseRepository[Task, TaskCreate, TaskUpdate]):
         )
     
     def get_overdue_tasks(self, db: Session) -> List[Task]:
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         return (
             db.query(Task)
             .filter(
