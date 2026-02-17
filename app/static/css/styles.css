@@ -971,15 +971,15 @@ body {
     padding: 1rem;
   }
 
-  /* Sidebar menu drawer */
+  /* Sidebar menu drawer - Clean white design */
   .navbar__menu {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
-    width: 280px;
+    width: 300px;
     max-width: 85%;
-    background: var(--color-surface);
+    background: white;
     flex-direction: column;
     gap: 0;
     padding: 0;
@@ -987,57 +987,52 @@ body {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 999;
     overflow-y: auto;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   }
 
   .navbar__menu.active {
     transform: translateX(0);
   }
 
-  /* Menu header section */
+  /* Remove the ::before pseudo-element */
   .navbar__menu::before {
-    content: '';
-    display: block;
-    height: 180px;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    margin-bottom: 1rem;
-    flex-shrink: 0;
+    display: none;
   }
 
   .navbar__link {
-    border-radius: 0;
     padding: 1rem 1.5rem;
     width: 100%;
     font-size: 0.9375rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin: 0 0.75rem;
-    width: calc(100% - 1.5rem);
-    border-radius: var(--radius-md);
+    border-radius: 0;
     transition: var(--transition);
+    color: var(--color-text);
+    border: none;
+    background: transparent;
   }
 
   .navbar__link i {
-    font-size: 1.25rem;
-    width: 24px;
+    font-size: 1.125rem;
+    width: 20px;
     text-align: center;
     flex-shrink: 0;
+    color: var(--color-text-light);
   }
 
   .navbar__link:hover {
-    background: var(--color-background);
+    background: rgba(0, 0, 0, 0.04);
   }
 
   .navbar__link--active {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.08);
+    color: var(--color-primary);
+    font-weight: 500;
   }
 
   .navbar__link--active i {
-    color: white;
+    color: var(--color-primary);
   }
 
   .navbar__brand {

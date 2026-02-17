@@ -51,15 +51,38 @@ class MobileNav {
     const header = document.createElement('div');
     header.className = 'mobile-menu-header';
     header.innerHTML = `
+      <button class="mobile-menu-close" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+      </button>
       <div class="mobile-menu-header__content">
-        <i class="fas fa-tasks mobile-menu-header__icon"></i>
-        <h2 class="mobile-menu-header__title">TaskFusion</h2>
-        <p class="mobile-menu-header__subtitle">Task Management</p>
+        <div class="mobile-menu-header__avatar">
+          <i class="fas fa-tasks"></i>
+        </div>
+        <div class="mobile-menu-header__info">
+          <h2 class="mobile-menu-header__title">TaskFusion</h2>
+          <p class="mobile-menu-header__subtitle">Task Management System</p>
+        </div>
       </div>
     `;
 
-    // Insert at the beginning
-    menu.insertBefore(header, menu.firstChild);
+    // Create nav wrapper
+    const nav = document.createElement('div');
+    nav.className = 'mobile-menu-nav';
+    
+    // Move all links to nav wrapper
+    const links = Array.from(menu.querySelectorAll('.navbar__link'));
+    links.forEach(link => nav.appendChild(link));
+
+    // Clear menu and rebuild
+    menu.innerHTML = '';
+    menu.appendChild(header);
+    menu.appendChild(nav);
+
+    // Add close button listener
+    const closeBtn = header.querySelector('.mobile-menu-close');
+    closeBtn.addEventListener('click', () => {
+      this.toggleMenu(false);
+    });
   }
 
   toggleMenu(open) {
